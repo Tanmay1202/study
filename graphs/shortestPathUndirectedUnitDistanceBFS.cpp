@@ -3,55 +3,58 @@ using namespace std;
 
 class Solution {
 public:
-    // Function to find the shortest path from source to all vertices
-    vector<int> shortestPath(vector<vector<int>>& edges, int N, int M, int src) {
-        //create an adjacency list for graphs representation
-        vector<vector<int>> adj(N);
+    vector<int> shortestPath(vector<vector<int>>& edges, int N, int M, int src)
+    {
+        vector<int> adj[N];
 
-        for(auto it: edges)
+        for(auto &it: edges)
         {
-            adj[it[1]].push_back(it[0]);
             adj[it[0]].push_back(it[1]);
+            adj[it[1]].push_back(it[0]);
         }
 
-        //create a distance vector to store all the distance
-        //initialize each element to 1e9
-        vector<int> dist(N, 1e9);
+        int dist[N];
+
+        for(int i=0; i<N; i++)
+        {
+            dist[i] = 1e9;
+        }
 
         dist[src] = 0;
 
-        //create a queue to store the levels
+
         queue<int> q;
+
         q.push(src);
 
-        //apply the breadth first search algorithm
         while(!q.empty())
         {
-            int node = q.front();
+            int node = q.front(); 
             q.pop();
 
-            for(auto it: adj[node])
+            for(int i=0; i<adj[node].size(); i++)
             {
-                //if reaching the neighbour through current node is shorter, then take this path.
-                //and push the neighbour back into the queue, since this is the shorter way.
-                if(dist[node] + 1 < dist[it])
+                if(dist[node] + 1 < dist[adj[node][i]])
                 {
-                    dist[it] = dist[node] + 1;
-                    q.push(it);
+                    dist[adj[node][i]] = dist[node] + 1;
+                    q.push(adj[node][i]);
                 }
             }
+        
         }
 
-        //create an ans vector and push all the reachable nodes' shortest distances from the source
         vector<int> ans(N, -1);
 
         for(int i=0; i<N; i++)
         {
             if(dist[i] != 1e9)
-            ans[i] = dist[i];
+            {
+                ans[i] = dist[i];
+            }
         }
 
         return ans;
+
     }
 };
 
