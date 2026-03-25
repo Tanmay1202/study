@@ -2,50 +2,47 @@
 using namespace std;
 
 // Class containing the solution logic
-class Solution {
+class Solution
+{
 public:
     // Function to perform DFS
-    void dfs(int node, vector<int> &adj[], vector<int> &st, vector<int>& vis) 
+    void dfs(int node, vector<int> adj[], stack<int> &st, vector<bool> &vis)
     {
-        //mark the node as visited;
         vis[node] = true;
-        
-        //traverse the neighbouring nodes
-        for(int i=adj[node]; i<adj[node].size(); i++)
+
+        for (int neighbour : adj[node])
         {
-            //explore all the unvisited neighbours
-            if(!vis[adj[node][i]])
+            if (!vis[neighbour])
             {
-                dfs(adj[node][i], adj, st, vis);
+                dfs(neighbour, adj, st, vis);
             }
-        }   
+        }
 
-        //add the node to the path
         st.push(node);
-
     }
 
     // Function to perform Topological Sort
-    vector<int> topoSort(int V, vector<int> adj[]) {
-        //visited array to mark nodes as visited
+    vector<int> topoSort(int V, vector<int> adj[])
+    {
+        // visited array to mark nodes as visited
         vector<bool> vis(V, false);
 
-        //use a stack to preserve the topo sort order
+        // use a stack to preserve the topo sort order
         stack<int> st;
 
-        //call dfs for unvisited nodes
-        for(int i=0; i<V; i++)
+        // call dfs for unvisited nodes
+        for (int i = 0; i < V; i++)
         {
-            if(!vis(i))
+            if (!vis[i])
             {
                 dfs(i, adj, st, vis);
             }
         }
 
-        //vector to store the order
+        // vector to store the order
         vector<int> ans;
 
-        while(!st.empty())
+        while (!st.empty())
         {
             ans.push_back(st.top());
             st.pop();
@@ -56,7 +53,8 @@ public:
 };
 
 // Driver code
-int main() {
+int main()
+{
     // Number of vertices and edges
     int V = 6, E = 6;
 
@@ -77,7 +75,8 @@ int main() {
 
     // Print the result
     cout << "Topological Sort: ";
-    for (auto it : res) {
+    for (auto it : res)
+    {
         cout << it << " ";
     }
     cout << endl;
