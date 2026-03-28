@@ -1,88 +1,73 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-class Solution
-{
-    public:
-        // Function to find the shortest distance of all the vertices
-        // from the source vertex S.
-        vector<int> dijkstra(int V, vector<vector<int>> adj[], int S)
-        {
-            // Create a set ds for storing the nodes as a pair {dist,node}
-            // where dist is the distance from source to the node.
-            // set stores the nodes in ascending order of the distances.
-            set<pair<int, int>> st; 
+class Solution {
+public:
+    // Function to implement Dijkstra's Algorithm
+    vector<int> dijkstra(int V, vector<vector<pair<int,int>>>& adj, int src) {
+        // Distance array initialized to large value
+        vector<int> dist(V, 1e9);
 
-            // Initialising dist list with a large number to
-            // indicate the nodes are unvisited initially.
-            // This list contains distance from source to the nodes.
-            vector<int> dist(V, 1e9); 
+        // Min-heap storing {distance, node}
+        priority_queue<pair<int,int>, vector<pair<int,int>>, 
+                       greater<pair<int,int>>> pq;
 
-            // Insert the source node with a distance of 0.
-            st.insert({0, S}); 
+        // Distance to source is 0
+        dist[src] = 0;
 
-            // Source initialised with dist = 0
-            dist[S] = 0;
+        // Push source into heap
+        pq.push({0, src});
 
-            // Traverse the graph until the set is empty
-            while(!st.empty()) {
-                // Extract the node with the minimum distance
-                auto it = *(st.begin()); 
-                int node = it.second; 
-                int dis = it.first; 
-                st.erase(it); 
+        // Process nodes until heap is empty
+        while (!pq.empty()) {
+            // Extract node with minimum distance
+            int d = pq.top().first;
+            int node = pq.top().second;
+            pq.pop();
 
-                // Check for all adjacent nodes of the extracted node
-                for(auto it : adj[node]) {
-                    int adjNode = it[0];  // Adjacent node
-                    int edgW = it[1];     // Weight of the edge
-                    
-                    // If the new distance is smaller, update it
-                    if(dis + edgW < dist[adjNode]) {
-                        // Erase the previous entry of the adjacent node
-                        // if it was visited previously with a larger cost.
-                        if(dist[adjNode] != 1e9) 
-                            st.erase({dist[adjNode], adjNode}); 
+            // Skip if this distance is outdated
+            if (d > dist[node]) continue;
 
-                        // Update the distance for the adjacent node
-                        dist[adjNode] = dis + edgW; 
+            // Traverse all adjacent neighbors
+            for (auto it : adj[node]) {
+                int next = it.first;
+                int wt = it.second;
 
-                        // Insert the adjacent node with the updated distance into the set
-                        st.insert({dist[adjNode], adjNode}); 
-                    }
+                // Relaxation check
+                if (dist[node] + wt < dist[next]) {
+                    // Update distance
+                    dist[next] = dist[node] + wt;
+
+                    // Push updated distance into heap
+                    pq.push({dist[next], next});
                 }
             }
-
-            // Return the list containing shortest distances
-            // from source to all the nodes.
-            return dist; 
         }
+        return dist;
+    }
 };
 
-int main()
-{
-    // Driver code.
-    int V = 3, E = 3, S = 2;  // Number of vertices, edges, and source vertex
-    vector<vector<int>> adj[V]; // Adjacency list representation of the graph
+int main() {
+    // Number of vertices
+    int V = 5;
 
-    // Example graph with edges and weights
-    vector<int> v1{1, 1}, v2{2, 6}, v3{2, 3}, v4{0, 1}, v5{1, 3}, v6{0, 6};
-    adj[0].push_back(v1);
-    adj[0].push_back(v2);
-    adj[1].push_back(v3);
-    adj[1].push_back(v4);
-    adj[2].push_back(v5);
-    adj[2].push_back(v6);
+    // Adjacency list {neighbor, weight}
+    vector<vector<pair<int,int>>> adj(V);
 
+    // Example edges
+    adj[0].push_back({1, 2});
+    adj[0].push_back({2, 4});
+    adj[1].push_back({2, 1});
+    adj[1].push_back({3, 7});
+    adj[2].push_back({4, 3});
+    adj[3].push_back({4, 2});
+
+    // Run algorithm
     Solution obj;
-    // Call dijkstra function and store the result
-    vector<int> res = obj.dijkstra(V, adj, S);
+    vector<int> dist = obj.dijkstra(V, adj, 0);
 
-    // Output the shortest distance from source to all nodes
-    for (int i = 0; i < V; i++)
-    {
-        cout << res[i] << " ";
+    // Print shortest distances
+    for (int i = 0; i < V; i++) {
+        cout << "Distance from 0 to " << i << " = " << dist[i] << endl;
     }
-    cout << endl;
-    return 0;
 }
